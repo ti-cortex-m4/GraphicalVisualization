@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<!-- Instantiating the angular app -->
+<html lang="en" ng-app="WebxenApp">
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="../../favicon.ico">
+
+<title>Dashboard for Exposure Visualization</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<!-- Library for Angularjs -->
+<script src="http://code.angularjs.org/1.3.5/angular.js"></script>
+
+<!-- Library for ui-bootstrap -->
+<script
+	src="http://angular-ui.github.com/bootstrap/ui-bootstrap-tpls-0.6.0.js"></script>
+
+<!-- Library for d3.js -->
+<script src="http://d3js.org/d3.v3.js"></script>
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<!-- Script for tooltip -->
+<script src="js/tooltip.js"></script>
+
+<!-- Script for the dynamic legend -->
+<script src="js/d3legend.js"></script>
+
+<!-- Angular controller  -->
+<script src="js/graphApp.js"></script>
+
+<!-- Angular directive for the force directed D3 graph  -->
+<script src="js/graph.js"></script>
+
+
+<script>
+    <!-- Dynamic enable-disable for Legal Entities -->
+	function handleSelect() {
+		var ddl = document.getElementById("elementType");
+		var selectedValue = ddl.options[ddl.selectedIndex].value;
+		if (selectedValue == 'LegalEntity') {
+			document.getElementById('exposureType').disabled = false;
+			document.getElementById('hierarchyType').disabled = false;
+
+		} else {
+			document.getElementById('exposureType').disabled = true;
+			document.getElementById('hierarchyType').disabled = true;
+
+		}
+
+	}
+	
+	<!-- Frontend validation script -->
+	function validation() {
+
+		var ddl = document.getElementById("elementType");
+		var selectedValue = ddl.options[ddl.selectedIndex].value;
+		var expType = document.getElementById("exposureType");
+		var expTypeValue = expType.options[expType.selectedIndex].value;
+		var hierType = document.getElementById("hierarchyType");
+		var hierTypeValue = hierType.options[hierType.selectedIndex].value;
+
+		if (selectedValue == 'LegalEntity') {
+			document.getElementById('exposureType').required = true;
+			document.getElementById('hierarchyType').required = true;
+			if (expTypeValue == '? undefined:undefined ?'
+					|| hierTypeValue == '? undefined:undefined ?') {
+				//alert('this is empty');
+				document.getElementById("errorRange").innerHTML = "Please select Exposure Type and Hierachy Type for Legal Entity.";
+				document.getElementById("errorRange").style.display = "block";
+			} else {
+				document.getElementById("errorRange").style.display = "none";
+			}
+		} else {
+			document.getElementById('exposureType').required = false;
+			document.getElementById('hierarchyType').required = false;
+			document.getElementById("errorRange").style.display = "none";
+		}
+
+		var id = document.getElementById("id");
+		var minRange = document.getElementById("minExposure");
+		var maxRange = document.getElementById("maxExposure");
+		if (id != null && id.value.length == 0 && minRange.value.length == 0
+				&& maxRange.value.length == 0) {
+			document.getElementById("errorRange").innerHTML = "Please provide Element Id or the maximum/minimum Exposure Range.";
+			document.getElementById("errorRange").style.display = "block";
+		}
+
+	}
+</script>
+<style>
+path.link {
+	fill: none;
+	stroke: #666;
+	stroke-width: 1.5px;
+}
+/* circle {
+  fill: #ccc;
+  stroke: #fff;
+  stroke-width: 1.5px;
+} */
+#footer {
+	height: 50px;
+	background-color: black;
+}
+text {
+	fill: #000;
+	font: 10px sans-serif;
+	pointer-events: none;
+}
+#leftColumn {
+	height: 840px;
+}
+#tooltip {
+	position: absolute;
+	width: 200px;
+	height: auto;
+	padding: 10px;
+	background-color: white;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+	pointer-events: none;
+}
+
+#tooltip.hidden {
+	display: none;
+}
+
+#tooltip p {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 16px;
+	line-height: 20px;
+}
+
+.legend rect {
+	fill: white;
+	stroke: black;
+	opacity: 0.8;
+}
+</style>
+
+
+
+</head>
+
+<body id="controller" ng-controller="ExposureController as sunburst">
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed"
+					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+					aria-controls="navbar">
+					<span class="sr-only">Toggle navigation</span> <span
+						class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><img src="img/bnym_logo.png"></img></a>
+			</div>
+
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-3 col-md-2 sidebar" id="leftColumn">
+
+				<form ng-submit="fetch()" id="sideForm" onchange="handleSelect()"
+					onsubmit="validation()" name="sideForm">
+					<div class="form-group">
+						<label for="exampleInputEmail1">Element Type*</label> <select
+							ng-model="type" class="form-control" name="type" id="elementType"
+							required="required">
+							<option value="LegalEntity" selected>Legal Entity</option>
+							<option value="LOB">LOB</option>
+							<option value="InvolvedParty">Involved Party</option>
+							<option value="Customer">Customer</option>
+							<option value="Account">Account</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">View</label> <select
+							ng-model="typeExposure" name="typeExposuree" id="exposureType"
+							class="form-control" disabled>
+							<option value="Short">Short</option>
+							<option value="Aggregated">Aggregated</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputPassword1">Hierarchy Type</label> <select
+							ng-model="typeHierarchy" name="typeHierarchy" id="hierarchyType"
+							class="form-control" disabled>
+							<option value="Risk">Risk</option>
+							<option value="Standard">Standard</option>
+						</select>
+					</div>
+					<div class="form-group">
+
+						<label for="exampleInputFile">Element Name</label> <input
+							type="text" ng-model="id" placeholder="Enter the name of Element"
+							typeahead="address for address in names | limitTo:5 "
+							typeahead-wait-ms="300" typeahead-no-results="noResults"
+							class="form-control">
+
+					</div>
+
+					<div class="form-group">
+						<label for="exampleInputFile" id="dateLabel">Date*</label> <input
+							ng-model="date" type="date" name="date" id="date"
+							required="required">
+					</div>
+
+					<div class="form-group">
+						<label for="exampleInputFile">Minimum Exposure</label> <input
+							ng-model="minExposure" type="number" name="minExposure"
+							id="minExposure">
+					</div>
+
+					<div class="form-group">
+						<label for="exampleInputFile">Maximum Exposure</label> <input
+							ng-model="maxExposure" type="number" name="maxExposure"
+							id="maxExposure">
+					</div>
+
+					<div class="form-group">
+						<label for="exampleInputPassword1">Label Type</label> <select
+							ng-model="labelType" name="labelType" id="labelType"
+							class="form-control">
+							<option value="IntradayExposure">Intraday Exposure</option>
+							<option value="Overnight Overdraft">Overnight Overdraft</option>
+							<option value="Collateral">Collateral</option>
+							<option value="End of the Day Balance">End of the Day
+								Balance</option>
+						</select>
+					</div>
+
+					<input type="submit" class="btn btn-default" id="leftFormSubmit"></input>
+				</form>
+
+			</div>
+			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main"
+				id="mainBody">
+
+				<form id="generateCSV" ng-submit="generateCSV()">
+					<div class="form-group">
+						<input type="submit" value="Generate CSV" id="csvgenerate"
+							class="btn btn-default" />
+					</div>
+				</form>
+
+				<h1 class="page-header">Relationship and Exposure Data</h1>
+
+				<div class="ui-widget" id="ui-widget">
+					<span> <label> View By: </label> <select id="radiusType"
+						onchange="changeRadius()">
+							<option value="amount">Exposure Amount</option>
+							<option value="duration">Exposure Duration</option>
+					</select>
+					</span> <span id="numberSpan">Show Top: <select ng-model="number"
+						id="numberSelect" ng-change="fetchOnNumber()">
+							<option value="1">1</option>
+							<option value="3">3</option>
+							<option value="5">5</option>
+							<option value="10">10</option>
+							<option value="All" selected>All</option>
+					</select>
+					</span> <span> <input id="search" placeholder="Enter Name...">
+						<button type="button" onclick="searchNode()">Search</button>
+					</span>
+
+
+				</div>
+				<div id="errorRange"></div>
+				<div id='loadingmessage' style='display: none'>
+					<img src='/WebxenBNY/app/img/loading.gif' />
+				</div>
+
+				<div class="row placeholders" id="places">
+
+					<div class="visualization" id="visualization">
+						<div id="tooltip" class="hidden">
+							<p>
+								<strong style='color: orange'>Element Information</strong>
+							</p>
+							<div>
+								<strong>Name: </strong><span id="name">100</span>
+							</div>
+							<div>
+								<strong>Type: </strong><span id="type">100</span>
+							</div>
+							<div>
+								<strong>Amount: </strong><span id="exposureAmount">100</span>
+							</div>
+							<div>
+								<strong>Duration: </strong><span id="exposureDuration">100</span>
+							</div>
+
+						</div>
+						<sunburst data="sunburst.data" id="sunburst"></sunburst>
+					</div>
+					<script
+						src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+					<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+					<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id= footer></div>
+	
+</body>
+</html>

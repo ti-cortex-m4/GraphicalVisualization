@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html ng-app="WebxenAppFirst">
+<head>
+<meta charset="ISO-8859-1">
+<title>WebXen</title>
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="css/main.css" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script src="http://code.angularjs.org/1.3.5/angular.js"></script>
+<script>
+
+ function handleSelect() {
+	 var ddl = document.getElementById("firstSelect");
+	 var selectedValue = ddl.options[ddl.selectedIndex].value;
+	 if(selectedValue == 'SelectType') {
+		 
+	 }
+    if (selectedValue == 'RiskExposure') {        
+    	window.location.href='/Webxen/app/test1.html';
+    } else {
+    	//Please provide page Ids
+    }
+    
+} 
+
+</script>
+</head>
+<body>
+<div id="mainHeader"></div>
+<div id="headTitle"> WEBXEN</div>
+<form id="firstForm" onchange="handleSelect()" name="sideForm">
+<div class="form-group" id="firstdiv">
+	<label for="exampleInputEmail1" id="firstLabel">Select the Label Type</label> 
+	<select class="form-control" id="firstSelect">
+	<option value="SelectType" disabled="disabled" selected="selected">Select one option..</option>
+  <option  value="RiskExposure">Risk Exposure</option>
+  <option disabled="disabled" value="CreditExposure">Credit Exposure</option>
+  <option disabled="disabled" value="CapitalMarketExposure">Capital Market Exposure</option>
+</select>
+</div>
+</form>
+
+</body>
+</html>

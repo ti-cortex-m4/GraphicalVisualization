@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd"
+	xmlns:context="http://www.springframework.org/schema/context">
+	<context:annotation-config />
+	<context:component-scan base-package="com.org.practicum.dao">
+
+		<context:include-filter type="aspectj"
+			expression="com.org.practicum.dao.*" />
+	</context:component-scan>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="url" value="jdbc:oracle:thin:@localhost:1521:xe" />
+		<property name="username" value="mellon" />
+		<property name="password" value="mellon" />
+	</bean>
+	
+	<bean id="dataSourceNeo" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="org.neo4j.jdbc.Driver" />
+		<property name="url" value="jdbc:neo4j://localhost:7474/mellon.graphdb" />
+		<property name="username" value="neo4j" />
+		<property name="password" value="mellon" />
+		<property name = "initialSize" value = "2"/>
+		<property name = "maxActive" value = "5"/>
+	</bean>
+
+</beans>

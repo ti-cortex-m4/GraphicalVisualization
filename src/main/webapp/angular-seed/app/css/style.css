@@ -1,0 +1,171 @@
+#sideForm {
+    margin-top: 75px;
+}
+
+#mainBody {
+	margin-left: 0px;
+	margin-top: 70px;
+}
+
+#leftColumn {
+	border-right: 5px solid gray;
+	padding-bottom: 100px;
+}
+
+#dateLabel {
+	padding-right: 30px;
+}
+
+#viewForm {
+	margin-left: 80%;
+}
+#generateCSV {
+	float: right;
+	margin-right: 40px;
+}
+#csvgenerate:hover {
+	background-color: #d3d3d3;
+	color:#000000;
+}
+#leftFormSubmit:hover {
+	background-color: #d3d3d3;
+	color:#000000;
+}
+
+#mainHeader{
+	position: absolute;
+	top: -20px;
+	left: -20px;
+	right: -40px;
+	bottom: -40px;
+	width: auto;
+	height: auto;
+	background-image: url("/WebxenBNY/app/img/cover.jpg");
+	background-size: cover;
+	-webkit-filter: blur(5px);
+	z-index: -1;
+}
+
+#headTitle {
+	font-size: 150px;
+	text-align: center;
+	margin-bottom: 60px;
+}
+
+#firstSelect {
+	width: 900px;
+	margin-left: 20%;
+}
+#firstLabel {
+	margin-left: 20%;
+}
+#firstOption {
+	color: gray;
+}
+
+#errorRange {
+	display:none;
+	color: #990000;
+    border: 3px solid gray;
+    height: 40px;
+    padding-top: 5px;
+    margin-top: 20px;
+    background-color: #faebd7;
+    font-size: 16px;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+#numberSpan {
+	margin-left: 5%;
+	font-weight: bold;
+}
+
+#numberSelect {
+	font-weight: normal;
+}
+
+#ui-widget {
+	margin-left: 30%;
+}
+
+#search {
+	margin-left: 5%;	
+	border: 1px solid #a29060;
+	font-size: 14px;
+}
+
+#numberForm {
+	display: inline;
+}
+
+#loadingmessage {
+	text-align: center;
+	margin-top: 50px;
+}
+
+.dropdown-menu {
+	min-width: 87%;
+}
+
+#visualization {
+	margin-top: 0px;
+}
+
+#date {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#minExposure {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#maxExposure {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#labelType {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#hierarchyType {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#exposureType {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#elementType {
+	width: 100%;
+	height: 32px;
+	padding: 4px 12px;
+	border: 1px solid #a29060;
+}
+
+#radiusType {
+	border: 1px solid #a29060;
+}
+
+#numberSelect {
+	border: 1px solid #a29060;
+}
+
